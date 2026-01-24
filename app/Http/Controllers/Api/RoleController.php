@@ -20,32 +20,50 @@ class RoleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+      public function store(Request $request)
     {
-        //
+        try {
+            $role = new Role();
+            $role->name = $request->role["name"];
+            $role->save();
+            return response()->json(["success" => "role has been saved successfully"], 200);
+        } catch (\Throwable $th) {
+            return response()->json(["error" => $th->getMessage()], 200);
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+
+        $role= Role::find($id);
+       return response()->json(compact("role"), 200);
+
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
+    public function update(Request $request)
+       {
+        try {
+            $role =  Role::find($request->role["id"]);
+            $role->name = $request->role["name"];
+            $role->save();
+            return response()->json(["success" => "Role has been updated successfully"], 200);
+        } catch (\Throwable $th) {
+            return response()->json(["error" => $th->getMessage()], 200);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request)
     {
-        //
+          Role::findOrFail($request->id)->delete();
+          return response()->json(["success" => "role has been deleted successfully"], 200);
     }
 }
