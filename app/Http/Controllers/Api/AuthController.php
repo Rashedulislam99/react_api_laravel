@@ -42,12 +42,19 @@ public function register(Request $request)
 
     public function login(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'password' => 'required',
-        ]);
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        // return response()->json([
+        //     'message' =>$request->all()
+        // ], 200);
+
+
+
+        // $request->validate([
+        //     'name' => 'required|string',
+        //     'password' => 'required',
+        // ]);
+
+        if (!Auth::attempt($request->only('name', 'password'))) {
             return response()->json([
                 'message' => 'Invalid credentials'
             ], 401);
@@ -61,13 +68,21 @@ public function register(Request $request)
 
         return response()->json([
             'token' => $token,
-            'user' => $user
+            'user' => $user,
+            "success" =>1,
+            "response" => "Login successful"
         ]);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
-        return response()->json(['message' => 'Logged out']);
+        // $request->user()->tokens()->delete();
+        // //   $request->user()->currentAccessToken()->delete();
+        // return response()->json(['message' => "successfully logout"], 200);
+
+        return response()->json([
+        'auth_header' => $request->header('Authorization'),
+        'user' => $request->user(),
+    ]);
     }
 }
