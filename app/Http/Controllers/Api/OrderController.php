@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
+use App\Models\Purchase;
 use App\Models\Stock;
 use Illuminate\Http\Request;
 
@@ -45,39 +46,50 @@ class OrderController extends Controller
     }
 
 public function react_order_save(Request $request)
-    {
-        try {
-            $order = new Order();
-            $order->customer_id = $request->customer['id'];
-            $order->order_date = now();
-            $order->delivery_date = now();
-            $order->shipping_address = $request->customer['address'];
-            $order->order_total = $request->summary['total'];
-            $order->discount = $request->summary['discount'];
-            $order->save();
+{
+    try {
+       
+        $purchase = new Purchase();
+        $purchase->supplier_id = $request->supplier['id'] ?? null;
+        $purchase->address = $request->address;
+        $purchase->sub_total = $request->summary['subtotal'] ?? 0;
+        $purchase->discount_amount = $request->summary['discount'] ?? 0;
+        $purchase->net_total = $request->summary['total'] ?? 0;
+        $purchase->save();
 
+        
+        foreach ($request->cartItems as $item) {
+         
+            $purchase->purchaseDetails()->create([
+                'product_id' => $item['id'],
+                'qty' => $item['qty'],
+                'price' => $item['price'],
+                'discount' => $item['discount'],
+                'subtotal' => ($item['qty'] * $item['price']) - $item['discount'],
+            ]);
 
-            foreach ($request->cartItems as $key => $value) {
-                $order_details = new OrderDetail();
-                $order_details->order_id = $order->id;
-                $order_details->product_id = $value['id'];
-                $order_details->qty = $value['qty'];
-                $order_details->price = $value['price'];
-                $order_details->discount = $value['discount'];
-                $order_details->save();
-
-                $stock= new Stock();
-                $stock->product_id= $value['id'];
-                $stock->qty= $value['qty'] *-1;
-                $stock->transaction_type_id=1;
-                $stock->remark="sales order";
-                $stock->save();
-            }
-            return response()->json(["success"=> "Order Created Successfully"]);
-        } catch (\Throwable $th) {
-            return response()->json($th->getMessage());
+       
+            $stock = new Stock();
+            $stock->product_id = $item['id'];
+            $stock->qty = $item['qty']; 
+            $stock->transaction_type_id = 2; 
+            $stock->remark = "Purchase Invoice #{$purchase->id}";
+            $stock->save();
         }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Purchase saved and stock updated!',
+            'purchase_id' => $purchase->id,
+        ]);
+    } catch (\Exception $e) {
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Error saving purchase: ' . $e->getMessage(),
+        ], 500);
     }
+}
 
 
     public function store(Request $request)

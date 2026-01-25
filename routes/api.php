@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\PurchaseController;
 use App\Http\Controllers\Api\RoleController;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\Request;
@@ -36,4 +37,13 @@ Route::delete("role/delete", [RoleController::class,"destroy"]);
 
 Route::get("order", [OrderController::class,"index"]);
 Route::get("order", [OrderController::class,"index"]);
+Route::get("order/orderInvoice/{id}", [OrderController::class,"invoice"]);
 Route::get("customer", [OrderController::class,"OrderData"]);
+Route::post("order/react_order_save", [OrderController::class,"react_order_save"]);
+
+
+
+
+Route::get("purchase",[PurchaseController::class,"index"]);
+Route::get("supplier",[PurchaseController::class,"purchaseData"]);
+Route::post("purchase/react_purchase_save",[PurchaseController::class,"react_purchase_save"]);
