@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\RoleController;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\Request;
@@ -28,3 +29,11 @@ Route::post("role/save", [RoleController::class,"store"]);
 Route::get("role/find/{id}", [RoleController::class,"show"]);
 Route::put("role/update", [RoleController::class,"update"]);
 Route::delete("role/delete", [RoleController::class,"destroy"]);
+
+
+
+
+
+Route::get("order", [OrderController::class,"index"]);
+Route::get("order", [OrderController::class,"index"]);
+Route::get("customer", [OrderController::class,"OrderData"]);

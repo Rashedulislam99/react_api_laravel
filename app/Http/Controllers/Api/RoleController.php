@@ -64,6 +64,6 @@ class RoleController extends Controller
     public function destroy(Request $request)
     {
           Role::findOrFail($request->id)->delete();
-          return response()->json(["success" => "role has been deleted successfully"], 200);
+          return response()->json(["success" => "yes"], 200);
     }
 }
