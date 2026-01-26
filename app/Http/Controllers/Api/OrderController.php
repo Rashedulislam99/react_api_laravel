@@ -18,7 +18,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::all();
+        $orders = Order::with("customer")->get();
         return response()->json(compact("orders"), 200);
     }
 
@@ -48,7 +48,7 @@ class OrderController extends Controller
 public function react_order_save(Request $request)
 {
     try {
-       
+
         $purchase = new Purchase();
         $purchase->supplier_id = $request->supplier['id'] ?? null;
         $purchase->address = $request->address;
@@ -57,9 +57,9 @@ public function react_order_save(Request $request)
         $purchase->net_total = $request->summary['total'] ?? 0;
         $purchase->save();
 
-        
+
         foreach ($request->cartItems as $item) {
-         
+
             $purchase->purchaseDetails()->create([
                 'product_id' => $item['id'],
                 'qty' => $item['qty'],
@@ -68,11 +68,11 @@ public function react_order_save(Request $request)
                 'subtotal' => ($item['qty'] * $item['price']) - $item['discount'],
             ]);
 
-       
+
             $stock = new Stock();
             $stock->product_id = $item['id'];
-            $stock->qty = $item['qty']; 
-            $stock->transaction_type_id = 2; 
+            $stock->qty = $item['qty'];
+            $stock->transaction_type_id = 2;
             $stock->remark = "Purchase Invoice #{$purchase->id}";
             $stock->save();
         }

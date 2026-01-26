@@ -28,7 +28,7 @@ class PurchaseController extends Controller
         $suppliers = Supplier::all();
         return response()->json(compact("products", "suppliers"));
     }
-    
+
 
 
 
@@ -58,8 +58,10 @@ class PurchaseController extends Controller
                 // Stock Update
                 $stock = new Stock();
                 $stock->product_id = $item['id'];
-                $stock->qty = $item['qty']; // Purchase হলে stock বৃদ্ধি পাবে
-                $stock->transaction_type_id = 2; // 2 = purchase
+                $stock->warehouse_id = 2; // Default warehouse
+                $stock->lot_id = 2; // Default warehouse
+                $stock->qty = $item['qty'];
+                $stock->transaction_type_id = 2;
                 $stock->remark = "Purchase Invoice #{$purchase->id}";
                 $stock->save();
             }
@@ -76,7 +78,7 @@ class PurchaseController extends Controller
                 'details' => $e->getMessage()
             ], 500);
         }
-    }  
+    }
     public function store(Request $request)
     {
         //
@@ -101,8 +103,14 @@ class PurchaseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        //
-    }
+   public function destroy($id)
+{
+    Purchase::findOrFail($id)->delete();
+
+    return response()->json([
+        "success" => true,
+        "message" => "Purchase deleted successfully"
+    ], 200);
+}
+
 }

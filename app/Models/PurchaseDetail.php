@@ -14,6 +14,7 @@ class PurchaseDetail extends Model
          'qty',
          'price',
          'discount',
+         'unit_price',
          'subtotal',];
 
          public function purchase()
