@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PurchaseController;
 use App\Http\Controllers\Api\RoleController;
@@ -54,5 +55,9 @@ Route::delete("purchase/{id}", [PurchaseController::class, "destroy"]);
 
 
 Route::post("stock/stock_report",[StockController::class,"index"]);
-Route::post("stock/lowstock",[StockController::class,"low_stock"]);
+Route::post("stock/low_stock",[StockController::class,"low_stock"]);
 Route::post("stock/over_stock",[StockController::class,"over_stock"]);
+
+
+
+Route::get('dashboard/report', [DashboardController::class, 'report'])->middleware('auth:sanctum');

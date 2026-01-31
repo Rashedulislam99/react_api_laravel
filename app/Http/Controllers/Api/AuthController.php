@@ -21,7 +21,11 @@ public function register(Request $request)
         ]);
 
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());
+             return response()->json([
+                'message' => 'Invalid credentials',
+                'message2' => $validator->errors()
+            ], 401);
+
         }
 
         $input = $request->all();
@@ -30,7 +34,10 @@ public function register(Request $request)
         $success['token'] =  $user->createToken('api-token')->plainTextToken;
         $success['name'] =  $user->name;
 
-        return $this->sendResponse($success, 'User register successfully.');
+       return response()->json([
+                'success' =>  $success,
+                'user' => $user
+       ], 200);
     }
 
 

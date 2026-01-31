@@ -11,11 +11,23 @@ class StockController extends Controller
     /**
      * Display a listing of the resource.
      */
+    // public function index()
+    // {
+    //      $stocks = Stock::with("product")->get();
+    //     return response()->json(compact("stocks"), 200);
+    // }
+
     public function index()
-    {
-         $stocks = Stock::with("product")->get();
-        return response()->json(compact("stocks"), 200);
-    }
+{
+    $stocks = Stock::with('product')
+        ->select('product_id')
+        ->selectRaw('SUM(qty) as total_qty')
+        ->groupBy('product_id')
+        ->get();
+
+    return response()->json(compact('stocks'), 200);
+}
+
 
 
 
@@ -24,8 +36,8 @@ public function low_stock()
     $stocks = Stock::with('product')
         ->select('product_id')
         ->selectRaw('SUM(qty) as total_qty')
-        ->where('qty', '<=', 10)
         ->groupBy('product_id')
+        ->having('total_qty', '<=', 10)
         ->get();
 
     return response()->json([
